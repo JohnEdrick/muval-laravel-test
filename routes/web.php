@@ -9,10 +9,10 @@ use App\Http\Controllers\TaskController;
 Route::get('/', [LoginController::class, 'index']);
 
 Route::get('/login', [LoginController::class, 'index'])->name('home');
-Route::POST('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login');
 
-Route::get('/register', [RegistrationController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegistrationController::class, 'register'])->name('register');
+Route::get('/register', [RegistrationController::class, 'showRegistrationForm'])->name('register.form');
+Route::post('/register', [RegistrationController::class, 'register'])->name('register.store');
 
 Route::group(['middleware' => 'auth'], function () {
 
@@ -21,8 +21,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/create', [TaskController::class, 'create'])->name('tasks.create');
     Route::post('/tasks/store', [TaskController::class, 'store'])->name('tasks.store');
-    Route::get('/tasks/{id}/edit', [TaskController::class, 'edit']);
-    Route::post('/tasks/update/{id}', [TaskController::class, 'update']);
-    Route::get('/tasks/{id}/delete', [TaskController::class, 'destroy']);
 
+    // Add route name for the edit and destroy routes
+    Route::get('/tasks/edit/{task}', [TaskController::class, 'edit'])->name('tasks.edit');
+    Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
+    Route::delete('/tasks/{task}/delete', [TaskController::class, 'destroy'])->name('tasks.destroy');
 });

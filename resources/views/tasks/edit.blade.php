@@ -1,32 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Task</title>
+
 </head>
+
 <body>
     <h1>Edit Task</h1>
 
-    <form action="/tasks/update/{{ $task->id }}" method="POST">
+    <form action="{{ route('tasks.update', $task->id) }}" method="POST">
         @csrf
+        @method('PUT')
+
         <label for="title">Title:</label>
-        <input type="text" id="title" name="title" value="{{ $task->title }}"><br>
+        <input type="text" id="title" name="title" value="{{ old('title', $task->title) }}" required><br>
 
         <label for="description">Description:</label>
-        <textarea id="description" name="description">{{ $task->description }}</textarea><br>
+        <textarea id="description" name="description">{{ old('description', $task->description) }}</textarea><br>
 
         <label for="status">Status:</label>
-        <select id="status" name="status">
-            <option value="pending" {{ $task->status == 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="in_progress" {{ $task->status == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-            <option value="completed" {{ $task->status == 'completed' ? 'selected' : '' }}>Completed</option>
+        <select id="status" name="status" required>
+            <option value="pending" {{ old('status', $task->status) == 'pending' ? 'selected' : '' }}>Pending</option>
+            <option value="in_progress" {{ old('status', $task->status) == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+            <option value="completed" {{ old('status', $task->status) == 'completed' ? 'selected' : '' }}>Completed</option>
         </select><br>
 
-        <!-- Using inline JavaScript (not recommended) -->
-        <button type="submit" onclick="return confirm('Are you sure you want to save changes?')">Save</button>
+        <label for="user_id">Assign User:</label>
+        <select id="user_id" name="user_id" required>
+            <option value="">Select User</option>
+            @foreach ($users as $user)
+            <option value="{{ $user->id }}" {{ old('user_id', $task->user_id) == $user->id ? 'selected' : '' }}>
+                {{ $user->name }}
+            </option>
+            @endforeach
+        </select><br>
+
+        @if ($errors->any())
+        <div class="error">
+            <strong>Whoops!</strong> There were some problems with your input.<br><br>
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        <button type="submit">Save</button>
     </form>
 
-    <a href="/tasks">Back to Task List</a>
+    <a href="{{ route('tasks.index') }}" class="back-link">Back to Task List</a>
 </body>
+
 </html>

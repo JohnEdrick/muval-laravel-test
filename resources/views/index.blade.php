@@ -1,21 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
 </head>
+
 <body>
     <h1>Login</h1>
     @if ($errors->any())
-        <div>
-            <strong>Whoops! Something went wrong:</strong>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+    <div>
+        <strong>Whoops! Something went wrong:</strong>
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
     @endif
 
     <form action="{{ route('login') }}" method="POST">
@@ -31,6 +33,7 @@
     </form>
 
 
-    <p>Don't have an account? <a href="{{ route('register') }}">Register here</a>.</p>
+    <p>Don't have an account? <a href="{{ route('register.store') }}">Register here</a>.</p>
 </body>
+
 </html>

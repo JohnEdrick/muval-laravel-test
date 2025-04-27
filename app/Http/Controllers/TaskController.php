@@ -2,63 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\User;
 
 class TaskController extends Controller
 {
     public function index()
     {
-        $tasks = Task::all();
-        foreach ($tasks as $task) {
-            $task->user;
-        }
-
+        $tasks = Task::with('user')->get();
         return view('tasks.index', ['tasks' => $tasks]);
     }
 
     public function create()
     {
-        return view('tasks.create');
+        $users = User::all();
+        return view('tasks.create', ['users' => $users]);
     }
 
-    public function store()
+    public function store(Request $request)
     {
-        $title = $_POST['title'];
-        $description = $_POST['description'];
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|in:pending,in_progress,completed',
+            'user_id' => 'required|exists:users,id',
+        ]);
 
-        DB::insert("INSERT INTO tasks (title, description) VALUES ('$title', '$description')");
+        Task::create($validated);
 
-        return redirect()->route('tasks.index');
+        return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
     }
 
-    public function edit($id)
+    public function edit(Task $task)
     {
-        $task = DB::select("SELECT * FROM tasks WHERE id = $id");
-
-        if (!$task) {
-            return "Task not found";
-        }
-
-        return view('tasks.edit', ['task' => $task[0]]);
+        $users = User::all();
+        return view('tasks.edit', ['task' => $task, 'users' => $users]);
     }
 
-    public function update($id)
+    public function update(Request $request, Task $task)
     {
-        $title = $_POST['title'];
-        $description = $_POST['description'];
-        $status = $_POST['status'];
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|in:pending,in_progress,completed',
+            'user_id' => 'required|exists:users,id',
+        ]);
 
-        DB::update("UPDATE tasks SET title = '$title', description = '$description', status = '$status' WHERE id = $id");
+        $task->update($validated);
 
-        return redirect()->route('tasks.index');
+        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
 
-    public function destroy($id)
+    public function destroy(Task $task)
     {
-        DB::delete("DELETE FROM tasks WHERE id = $id");
+        $task->delete();
 
-        return redirect()->route('tasks.index');
+        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
     }
 }
-
