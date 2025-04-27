@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Models\User;
@@ -11,13 +12,7 @@ class TaskController extends Controller
     public function index()
     {
         $tasks = Task::with('user')->get();
-        return view('tasks.index', ['tasks' => $tasks]);
-    }
-
-    public function create()
-    {
-        $users = User::all();
-        return view('tasks.create', ['users' => $users]);
+        return response()->json(['tasks' => $tasks], 200);
     }
 
     public function store(Request $request)
@@ -29,15 +24,14 @@ class TaskController extends Controller
             'user_id' => 'required|exists:users,id',
         ]);
 
-        Task::create($validated);
+        $task = Task::create($validated);
 
-        return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
+        return response()->json(['message' => 'Task created successfully.', 'task' => $task], 201);
     }
 
-    public function edit(Task $task)
+    public function show(Task $task)
     {
-        $users = User::all();
-        return view('tasks.edit', ['task' => $task, 'users' => $users]);
+        return response()->json(['task' => $task], 200);
     }
 
     public function update(Request $request, Task $task)
@@ -51,13 +45,13 @@ class TaskController extends Controller
 
         $task->update($validated);
 
-        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
+        return response()->json(['message' => 'Task updated successfully.', 'task' => $task], 200);
     }
 
     public function destroy(Task $task)
     {
         $task->delete();
 
-        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
+        return response()->json(['message' => 'Task deleted successfully.'], 200);
     }
 }

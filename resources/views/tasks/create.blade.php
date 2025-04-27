@@ -22,9 +22,9 @@
         <label for="status">Status:</label>
         <select id="status" name="status" required>
             <option value="">Select Status</option>
-            <option value="pending">Pending</option>
-            <option value="in_progress">In Progress</option>
-            <option value="completed">Completed</option>
+            <option value="To do">To do</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Done">Done</option>
         </select><br>
 
         <label for="user_id">Assign User:</label>
